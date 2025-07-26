@@ -1,0 +1,28 @@
+"NoteDatabase","n"
+"",5510
+"2020-07-24 county from Benton to Ravalli",1
+"2020-07-24 county from Choteau to Chouteau",7
+"2020-07-24 county from Mussellshell to Musselshell",1
+"2020-07-24 county from Red Lodge to Carbon",1
+"2020-07-24 county from Richard to Richland",1
+"2020-07-24 county from Sweatgrass to Sweet Grass",1
+"2020-07-24 county from blank to Big Horn",1
+"2020-07-24 county from blank to Carter; retest",1
+"2020-07-24 county from blank to Ravalli, based on coordinates",1
+"2020-07-24 county from blank to Richland, based on physical address",1
+"2020-07-24 county from blank to UnknownMT",6
+"2020-07-24 county from blank to UnknownNotMT; zero info",3
+"2020-07-24 state changed from MT to WY; county from Bighorn to Big Horn",1
+"2020-07-24 state changed from MT to WY; county from Yellowstone to Big Horn",1
+"Adam Quarter Reconcile 2024-04-28 - no update - deleted Lab field was 17Q3",1
+"Adam Quarter Reconcile 2024-04-28 - not updated - confusing there are 3 sample IDs across 10 months",1
+"Adam Quarter Reconcile 2024-04-28 - updated from 17Q2 to match delted Lab field",1
+"Adam Quarter Reconcile 2024-04-28 - updated from 18Q3 to match delted Lab field",1
+"Adam Quarter Reconcile 2024-04-28 - updated from 19Q2 to match delted Lab field",1
+"Adam Quarter Reconcile 2024-04-28 - updated from 19Q3 to match delted Lab field",1
+"Adam Quarter Reconcile 2024-04-28 - updated from 2021Q2 to match delted Lab field",1
+"Adam Quarter Reconcile 2024-04-28 - updated from 20Q2 to match delted Lab field",1
+"Adam marked ""Not a Well"" 2024-04-28",1
+"Adam updated to ""Not a Well"" 2024-04-28",1
+"Physical State from blank to MT on 2020-07-24",15
+"county updated to UnknownNotMT on 2020-07-24",3
