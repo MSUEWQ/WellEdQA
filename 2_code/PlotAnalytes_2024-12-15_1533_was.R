@@ -5,8 +5,8 @@ library(ggplot2)
 library(gridExtra)
 
 # import data and set years ####
-lab0 <- read.csv('../1_input/LabResults.csv')
-reg0 <- read.csv('../1_input/RegSheets.csv')
+lab0 <- read.csv('../1_input/2024LabResults.csv')
+reg0 <- read.csv('../1_input/2024RegSheets.csv')
 
 past.years <- c(seq(2015,2021,1))
 new.year <- c(2022,2023)
