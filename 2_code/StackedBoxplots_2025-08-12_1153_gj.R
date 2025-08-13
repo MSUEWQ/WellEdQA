@@ -32,7 +32,7 @@ for (analyte in unique(lab$Analyte)){
   png(paste0("../3_output/Boxplots/StackedBoxplots/", analyte, ".png"))
   analyte_df <- lab[lab$Analyte == analyte,]
   unit <- analyte_df$Runits[1]
-  p <- ggplot(analyte_df , aes(x = County, y = NResult, fill = Quarter)) +
+  p <- ggplot(analyte_df , aes(x = County, y = NResult)) +
     geom_boxplot() +
     coord_flip() +
     ggtitle(paste(analyte, unit))
