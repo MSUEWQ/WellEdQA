@@ -6,10 +6,14 @@ library(gridExtra)
 
 # import data and set years ####
 lab0 <- read.csv('../1_input/2024LabResults.csv')
-reg0 <- read.csv('../1_input/2024RegSheets.csv')
+reg0 <- read.csv('../1_input/2024RegistrationEntry.csv')
 
-past.years <- c(seq(2015,2021,1))
-new.year <- c(2022,2023)
+past.years <- c(seq(2015,2023,1))
+new.year <- c(2024)
+
+# Add test year and test quarter to reg0
+reg0$TestYear <- as.numeric(substr(reg0$YrQuarter, 1, 2)) + 2000
+reg0$TestQr <- substr(reg0$YrQuarter, 3, 4)
 
 # add reg fields to lab data
 reg2lab <- reg0[,c("TrackNum2_primary", "TestYear", "County", "Share_County")]
@@ -61,8 +65,7 @@ colnames(compile) <- headings
 # i = 23
 text.size <- 1.4
 
-for(i in 1:length(parameter.list))
-{
+for(i in 1:length(parameter.list)){
   parameter.data <- input.data[input.data$Analyte == parameter.list[i],]
   
   range.i <- range(parameter.data$NResult, na.rm = TRUE)
@@ -74,19 +77,19 @@ for(i in 1:length(parameter.list))
   # layout.show(2)
   
   # plot old data
-  boxplot(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'],
-          ylim = range.i,
-          main = paste0(parameter.list[i], " (", range(past.years)[1], "-", 
-                       range(past.years)[2], ")"))
-  past.n <- length(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  past.max <- max(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  past.median <- median(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  past.min <- min(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  
-  mtext(side = 1, line = 0, cex = text.size, paste0('n = ', past.n))
-  mtext(side = 1, line = 1, cex = text.size, paste0('max = ', past.max))
-  mtext(side = 1, line = 2, cex = text.size, paste0('median = ', past.median))
-  mtext(side = 1, line = 3, cex = text.size, paste0('min = ', past.min))
+  # boxplot(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'],
+  #         ylim = range.i,
+  #         main = paste0(parameter.list[i], " (", range(past.years)[1], "-", 
+  #                      range(past.years)[2], ")"))
+  # past.n <- length(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+  # past.max <- max(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+  # past.median <- median(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+  # past.min <- min(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+  # 
+  # mtext(side = 1, line = 0, cex = text.size, paste0('n = ', past.n))
+  # mtext(side = 1, line = 1, cex = text.size, paste0('max = ', past.max))
+  # mtext(side = 1, line = 2, cex = text.size, paste0('median = ', past.median))
+  # mtext(side = 1, line = 3, cex = text.size, paste0('min = ', past.min))
 
   # plot new data
   boxplot(parameter.data[parameter.data$TestYear %in% new.year, 'NResult'],
