@@ -5,11 +5,11 @@ library(ggplot2)
 library(gridExtra)
 library(dplyr)
 
-
 # import data
 lab0 <- read.csv('../1_input/2024LabResults.csv')
 reg0 <- read.csv('../1_input/2024RegistrationEntry.csv')
 well0 <- read.csv('../1_input/2024Wells.csv')
+
 
 
 
@@ -48,7 +48,9 @@ if (length(unique(reg0$TrackNum2_primary)) != nrow(reg0)) {
 
 
 
-# Make sure all reg sheets have unique lab results and vice versa --------------
+
+
+# Make sure all reg sheets have unique lab results -------------------------
 
 # Assuming no duplicate reg sheets...
 # Each tracking no in reg sheets should map to a unique tracking number in lab results
@@ -58,6 +60,9 @@ unique_track_reg <- unique(reg0$TrackNum2_primary)
 # Create list of unique tracking nums in lab results
 unique_track_lab <- unique(lab$TrackNum2_primary)
 
+# Initialize list of missing tracking numbers
+lab_missing_tracks <- c()
+
 # For each tracking num in reg sheet, find corresponding track num in lab result
 # After matching, remove tracking num from both lists
 # Repeat until all tracking nums are checked
@@ -66,29 +71,59 @@ for (track in unique_track_reg){
     unique_track_reg <- unique_track_reg[unique_track_reg != track]
     unique_track_lab <- unique_track_lab[unique_track_lab != track]
   } else if (!(track %in% unique_track_lab)){
-    print(paste("Tracking #", track, "not in lab results"))
+    # Add tracking number to missing_tracks list
+    lab_missing_tracks[length(lab_missing_tracks)+1] <- track
   }
 }
 
-# And each unique tracking number in lab results should map to a tracking no in reg sheets
-# same process as above
+if(length(lab_missing_tracks)>0){
+  print("Tracking #s not in lab results:")
+  print(lab_missing_tracks)
+} else if (length(lab_missing_tracks)==0){
+  print("No tracking #s missing from lab results")
+}
+
+
+
+
+
+# Make sure all lab results have unique reg sheets -------------------------
+
+# Each unique tracking number in lab results should map to a tracking no in reg sheets
+# Same process as above
+
+reg_missing_tracks <- c()
+
 for (track in unique_track_lab){
   if (track %in% unique_track_reg){
     unique_track_lab <- unique_track_reg[unique_track_lab != track]
     unique_track_red <- unique_track_lab[unique_track_reg != track]
   } else if (!(track %in% unique_track_lab)){
-    print(paste("Tracking #", track, "not in reg sheets"))
+    # Add tracking number to missing_tracks list
+    reg_missing_tracks[length(reg_missing_tracks)+1] <- track
   }
+}
+
+if(length(reg_missing_tracks)>0){
+  print("Tracking #s not in reg sheets:")
+  print(reg_missing_tracks)
+} else if (length(reg_missing_tracks)==0){
+  print("No tracking #s missing from reg sheets")
 }
 
 
 
-# Make sure all wells have corresponding unique reg sheets ---------
+
+
+# Make sure all wells have corresponding unique reg sheets ---------------------
 
 # Create list of unique well nums in reg sheet
 unique_wells_reg <- unique(reg0$TrackNum3_WellCode)
 # Create list of unique well nums in well0
 unique_wells <- unique(well0$TrackNum3_WellCode)
+
+# Initialize list of missing tracking numbers
+well_missing_tracks <- c()
 
 # For each well num in wells, find corresponding well num in reg0
 # After matching, remove tracking num from both lists
@@ -98,21 +133,66 @@ for (track in unique_wells){
     unique_wells_reg <- unique_wells_reg[unique_wells_reg != track]
     unique_wells <- unique_wells[unique_wells != track]
   } else if (!(track %in% unique_wells_reg)){
-    print(paste("Well #", track, "not in reg sheets"))
+    # Add tracking number to repeated_tracks list
+    well_missing_tracks[length(well_missing_tracks)+1] <- track
   }
 }
+
+if(length(well_missing_tracks)>0){
+  print("Tracking #s not in well results:")
+  print(well_missing_tracks)
+} else if (length(well_missing_tracks)==0){
+  print("No tracking #s missing from well results")
+}
+
+
+
+
+
+# Check for multiple results for given tracking num / analyte combo ------------
+
+# Initialize data frame to store duplicate results
+dupe_results <- lab[0,]
+
+# For each tracking number, see if there are any analytes with multiple results
+for (track in unique(lab$TrackNum2_primary)){
+  track_df <- lab[lab$TrackNum2_primary == track,]
+  n_occur <- data.frame(table(track_df$Analyte))
+  dupes <- track_df[track_df$Analyte %in% n_occur$Var1[n_occur$Freq > 1], ]
+  if (nrow(dupes)>0){
+    dupe_results <- rbind(dupe_results, dupes)
+  }
+}
+
+if (nrow(dupe_results)>0){
+  # Save in output folder
+  write.csv(dupe_results, paste0("../3_output/duplicate_results.csv"))
+  print("Duplicate lab results exist. See duplicate_results.csv in 3_output folder.")
+} else if (nrow(dupe_results == 0)){
+  print("There are no duplicate lab results.")
+}
+
+
+prim <- lab %>% group_by(TrackNum2_primary, SampleID, Analyte) %>% tally()
+
+
 
 
 
 # Extract sample descriptions for outliers --------------------------------
 
+get_description <- function(track){
+  description <- reg0[reg0$TrackNum2_primary==track, "SampleDescription"]
+  return(description)
+}
+  
+  
 for (analyte in unique(lab$Analyte)){
-  if (analyte == "Coliform, E-Coli" | analyte == "Coliform, Total" | 
-      analyte == "Nitrogen, Nitrate+Nitrite as N") next #skip
+  if (analyte == "Coliform, E-Coli" | analyte == "Coliform, Total") next #skip
   analyte_df <- lab[lab$Analyte == analyte,]
   out_vals <- boxplot(analyte_df$NResult, plot=FALSE)$out
   out_tracks <- analyte_df[analyte_df$NResult %in% out_vals, "TrackNum2_primary"]
-  out_descriptions <- reg0[reg0$TrackNum2_primary %in% out_tracks, "SampleDescription"]
+  out_descriptions <- sapply(out_tracks, get_description)
   
   if (length(out_tracks) > 0){
     # Make an outliers data frame
@@ -126,4 +206,46 @@ for (analyte in unique(lab$Analyte)){
 }
 
 
+
+
+
+# Compile reg sheet details for those who marked “No treatment system” but then marked some kind of treatment 
+
+no_treat <- reg0[reg0$SampleTreatedBeforeTesting == "No Treatment System",]
+contradicting_treatment <- no_treat[no_treat$TreatedWith != "No Data",]
+
+# Save
+if (nrow(contradicting_treatment)>0){
+  write.csv(contradicting_treatment,"../3_output/contradicting_treatment.csv")
+  print('There are some "untreated" samples which might be treated. See contradicting_treatment.csv in 3_output folder.')
+}
+
+
+
+
+
+# Look for "spring", "city water", "pond", "ditch", "drainage", "cistern" in description ----------
+
+flag_words <- c("spring", "city", "municipal", "pond", "ditch", "drainage", "cistern")
+
+# Look at entries that are marked as being wells
+wells <- reg0[reg0$NotAWell != "Not a Well",]
+
+# Initialize data frame for suspicious reg sheets
+maybe_not_wells <- wells[0,]
+
+# If a flag word is found within a sample description, add the reg sheet info to prob_not_wells
+for (word in flag_words){
+  sus <- wells[grepl(word, wells$SampleDescription, fixed = TRUE),]
+  maybe_not_wells <- rbind(maybe_not_wells, sus)
+}
+
+# Remove duplicate rows
+maybe_not_wells <- maybe_not_wells[!duplicated(maybe_not_wells),]
+
+# Save
+if (nrow(maybe_not_wells)>0){
+  write.csv(maybe_not_wells,"../3_output/maybe_not_wells.csv")
+  print('There are some suspicious "wells." See maybe_not_wells.csv in 3_output folder.')
+}
 
