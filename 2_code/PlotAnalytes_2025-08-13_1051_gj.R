@@ -74,22 +74,22 @@ for(i in 1:length(parameter.list)){
   png(1200,600, filename = paste0('../3_output/Boxplots/', parameter.list[i],'.png'))
   
   layout(matrix(c(1,2), nrow = 1, byrow = TRUE))
-  # layout.show(2)
+  layout.show(2)
   
-  # plot old data
-  # boxplot(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'],
-  #         ylim = range.i,
-  #         main = paste0(parameter.list[i], " (", range(past.years)[1], "-", 
-  #                      range(past.years)[2], ")"))
-  # past.n <- length(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  # past.max <- max(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  # past.median <- median(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  # past.min <- min(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
-  # 
-  # mtext(side = 1, line = 0, cex = text.size, paste0('n = ', past.n))
-  # mtext(side = 1, line = 1, cex = text.size, paste0('max = ', past.max))
-  # mtext(side = 1, line = 2, cex = text.size, paste0('median = ', past.median))
-  # mtext(side = 1, line = 3, cex = text.size, paste0('min = ', past.min))
+    # plot old data
+   boxplot(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'],
+           ylim = range.i,
+           main = paste0(parameter.list[i], " (", range(past.years)[1], "-", 
+                        range(past.years)[2], ")"))
+   past.n <- length(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+   past.max <- max(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+   past.median <- median(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+   past.min <- min(parameter.data[parameter.data$TestYear %in% past.years, 'NResult'])
+   
+   mtext(side = 1, line = 0, cex = text.size, paste0('n = ', past.n))
+   mtext(side = 1, line = 1, cex = text.size, paste0('max = ', past.max))
+   mtext(side = 1, line = 2, cex = text.size, paste0('median = ', past.median))
+   mtext(side = 1, line = 3, cex = text.size, paste0('min = ', past.min))
 
   # plot new data
   boxplot(parameter.data[parameter.data$TestYear %in% new.year, 'NResult'],

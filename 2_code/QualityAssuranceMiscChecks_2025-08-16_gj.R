@@ -38,9 +38,8 @@ if (length(unique(reg0$TrackNum2_primary)) != nrow(reg0)) {
   n_occur <- data.frame(table(reg0$TrackNum2_primary))
   duplicates <- reg0[reg0$TrackNum2_primary %in% n_occur$Var1[n_occur$Freq > 1],] %>% 
     select(c("NameLast", "NameFirst", "TrackNum2_primary"))
-  print("Duplicate Primary Tracking Numbers:")
-  print(duplicates)
-  errorCondition("Duplicate tracking numbers in reg0 data frame")
+  print("There are Duplicate Primary Tracking Numbers. See duplicate_regsheet_tracknums.csv in 3_output")
+  write.csv(duplicates,"../3_output/duplicate_regsheet_tracknums.csv")
 # If no duplicates, print "No duplicates"
   } else if (length(unique(reg0$TrackNum2_primary)) == nrow(reg0)){
   print("No duplicate primary tracking numbers")
@@ -77,8 +76,8 @@ for (track in unique_track_reg){
 }
 
 if(length(lab_missing_tracks)>0){
-  print("Tracking #s not in lab results:")
-  print(lab_missing_tracks)
+  print("There are tracking #s missing from lab results. See lab_missing_tracks.csv in 3_output")
+  write.csv(lab_missing_tracks,"../3_output/lab_missing_tracks.csv")
 } else if (length(lab_missing_tracks)==0){
   print("No tracking #s missing from lab results")
 }
@@ -105,8 +104,8 @@ for (track in unique_track_lab){
 }
 
 if(length(reg_missing_tracks)>0){
-  print("Tracking #s not in reg sheets:")
-  print(reg_missing_tracks)
+  print("There are tracking #s missing from reg sheets. See reg_missing_tracks.csv in 3_output")
+  write.csv(reg_missing_tracks,"../3_output/reg_missing_tracks.csv")
 } else if (length(reg_missing_tracks)==0){
   print("No tracking #s missing from reg sheets")
 }
@@ -139,8 +138,8 @@ for (track in unique_wells){
 }
 
 if(length(well_missing_tracks)>0){
-  print("Tracking #s not in well results:")
-  print(well_missing_tracks)
+  print("There are tracking #s missing from well results. See well_missing_tracks.csv in 3_output")
+  write.csv(well_missing_tracks,"../3_output/well_missing_tracks.csv")
 } else if (length(well_missing_tracks)==0){
   print("No tracking #s missing from well results")
 }
@@ -224,7 +223,7 @@ if (nrow(contradicting_treatment)>0){
 
 
 
-# Look for "spring", "city water", "pond", "ditch", "drainage", "cistern" in description ----------
+# Look for "spring", "city water", "pond", "ditch", "drainage", "cistern" in well descriptions ----------
 
 flag_words <- c("spring", "city", "municipal", "pond", "ditch", "drainage", "cistern")
 

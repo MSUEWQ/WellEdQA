@@ -37,7 +37,7 @@ lab[lab$TResult == "ND", "NResult"] <- 0
 for (analyte in unique(lab$Analyte)){
   
   # Set plot layout
-  png(1200,600, filename = paste0("../3_output/Boxplots/StackedBoxplots/", analyte, ".png"))
+  png(1200,600, filename = paste0("../3_output/StackedBoxplots/", analyte, ".png"))
   nf <- layout(matrix(c(1,2), nrow = 1, byrow = TRUE))
   layout.show(nf)
   
